@@ -1,3 +1,4 @@
-# globe-weather-loader
+# My little Globe
 
-This project was bootstrapped with [`create-r3f-app`](https://github.com/utsuboco/create-r3f-app)
+A small demostration of Three.js and Next.js.
+Rendering a globe with a 3D model and a 2D image.
