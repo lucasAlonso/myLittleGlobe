@@ -1,12 +1,11 @@
 'use client'
 import React, { useRef } from 'react'
 import * as THREE from 'three'
-import { Suspense } from 'react'
-import { Canvas, useFrame, useLoader } from '@react-three/fiber'
-import { Center, OrbitControls, Stars } from '@react-three/drei'
+import { useFrame, useLoader } from '@react-three/fiber'
+import { OrbitControls, Stars } from '@react-three/drei'
 import { TextureLoader } from 'three'
 
-export function Earth({ night }) {
+export function Earth({ night, triangles, intensity, clouds }) {
   const [colorMap, normalMap, specularMap, cloudsMap, nightMap] = useLoader(TextureLoader, [
     '/assets/8k_earth_daymap.jpg',
     '/assets/8k_earth_normal_map.jpg',
@@ -20,21 +19,31 @@ export function Earth({ night }) {
   useFrame(({ clock }) => {
     const elapsedTime = clock.getElapsedTime()
     normalEarthRef.current.rotation.y = elapsedTime / 24
-    cloudsRef.current.rotation.y = elapsedTime / 18
-    cloudsRef.current.rotation.x = elapsedTime / 32
+    if (clouds) {
+      cloudsRef.current.rotation.y = elapsedTime / 18
+      cloudsRef.current.rotation.x = elapsedTime / 32
+    }
   })
 
   return (
     <>
-      <ambientLight intensity={0.4} />
+      <ambientLight intensity={intensity / 100} />
       <pointLight color='#f6f6f6' intensity={2} position={[2, 0, 2]} />
       <Stars radius={100} depth={50} count={5000} factor={12} saturation={0} fade />
-      <mesh ref={cloudsRef}>
-        <sphereGeometry args={[1.01, 32, 32]} />
-        <meshPhongMaterial map={cloudsMap} opacity={0.4} side={THREE.DoubleSide} depthWrite={true} transparent={true} />
-      </mesh>
+      {clouds && (
+        <mesh ref={cloudsRef}>
+          <sphereGeometry args={[1.01, triangles, triangles]} />
+          <meshPhongMaterial
+            map={cloudsMap}
+            opacity={0.4}
+            side={THREE.DoubleSide}
+            depthWrite={true}
+            transparent={true}
+          />
+        </mesh>
+      )}
       <mesh ref={normalEarthRef}>
-        <sphereGeometry args={[1, 32, 32]} />
+        <sphereGeometry args={[1, triangles, triangles]} />:
         <meshPhongMaterial specularMap={specularMap} />
         <meshStandardMaterial
           map={night ? nightMap : colorMap}

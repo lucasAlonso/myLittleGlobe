@@ -1,9 +1,18 @@
 'use client'
 
-import { Earth } from '@/components/canvas/earth'
+import { Button } from '@/components/ui/button'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
+import { Menu } from '@/components/ui/menu'
+import { Slider } from '@/components/ui/slider'
+import { Switch } from '@/components/ui/switch'
+import { ModeToggle } from '@/components/ui/toggle'
+import { Earth } from '@/src/components/canvas/earth'
+import { Cloud, Flashlight, MenuIcon, TriangleIcon } from 'lucide-react'
+import { useTheme } from 'next-themes'
 import dynamic from 'next/dynamic'
+import { useState } from 'react'
 
-const View = dynamic(() => import('@/components/canvas/View').then((mod) => mod.View), {
+const View = dynamic(() => import('@/src/components/canvas/View').then((mod) => mod.View), {
   ssr: false,
   loading: () => (
     <div className='flex h-96 w-full flex-col items-center justify-center'>
@@ -18,23 +27,59 @@ const View = dynamic(() => import('@/components/canvas/View').then((mod) => mod.
     </div>
   ),
 })
-const Common = dynamic(() => import('@/components/canvas/View').then((mod) => mod.Common), { ssr: false })
+const Common = dynamic(() => import('@/src/components/canvas/View').then((mod) => mod.Common), { ssr: false })
 
 export default function Page() {
+  const { theme } = useTheme()
+  const [triangles, setTriangles] = useState(32)
+  const [lightIntensity, setLightIntensity] = useState(40)
+  const [clouds, setClouds] = useState(true)
+
   return (
-    <>
-      <div className='mx-auto flex w-full flex-col flex-wrap items-center md:flex-row  lg:w-4/5'>
+    <div className='bg-amber-100 dark:bg-slate-800 w-full h-full'>
+      <div className='mx-auto flex w-full flex-col flex-wrap items-center md:flex-row  lg:w-4/5 text-teal-700 dark:text-white'>
         <div className='flex w-full flex-col items-start justify-center p-12 text-center md:w-2/5 md:text-left'>
           <p className='w-full uppercase'>Next + React Three Fiber</p>
-          <h1 className='my-4 text-5xl font-bold leading-tight'>Next 3D Starter</h1>
-          <p className='mb-8 text-2xl leading-normal'>A minimalist starter for React, React-three-fiber and Threejs.</p>
+          <p className='mb-8 text-2xl leading-normal'>A minimalist demostration of nextjs and threejs</p>
         </div>
       </div>
-
+      <div className='fixed top-0 right-0 p-4 z-50 flex w-24 flex-wrap gap-2'>
+        <ModeToggle />
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant='outline'>
+              <TriangleIcon />
+              <div>{triangles}</div>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align='end'>
+            <DropdownMenuItem>
+              <Slider defaultValue={[32]} onValueChange={(value) => setTriangles(value)} min={4} max={64} />
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant='outline'>
+              <Flashlight />
+              <div>{lightIntensity}</div>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align='end'>
+            <DropdownMenuItem>
+              <Slider defaultValue={[40]} onValueChange={(value) => setLightIntensity(value)} min={10} max={90} />
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+        <div className='flex bg-slate-100 gap-2  justify-center  items-center  p-1.5 rounded'>
+          <Cloud className='h-4 w-4' />
+          <Switch defaultChecked onCheckedChange={() => setClouds(!clouds)} defaultValue={true} />
+        </div>
+      </div>
       <View className='absolute top-0 flex h-screen w-full flex-col items-center justify-center'>
-        <Earth />
+        <Earth night={theme === 'dark'} triangles={triangles} intensity={lightIntensity} clouds={clouds} />
         <Common />
       </View>
-    </>
+    </div>
   )
 }

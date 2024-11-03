@@ -1,5 +1,6 @@
-import { Layout } from '@/components/dom/Layout'
-import '@/global.css'
+import { Layout } from '@/src/components/dom/Layout'
+import { ThemeProvider } from '@/components/theme-provider'
+import '@/app/global.css'
 
 export const metadata = {
   title: 'Next.js + Three.js',
@@ -15,8 +16,9 @@ export default function RootLayout({ children }) {
       */}
       <head />
       <body>
-        {/* To avoid FOUT with styled-components wrap Layout with StyledComponentsRegistry https://beta.nextjs.org/docs/styling/css-in-js#styled-components */}
-        <Layout>{children}</Layout>
+        <ThemeProvider attribute='class' defaultTheme='system' enableSystem disableTransitionOnChange>
+          <Layout>{children}</Layout>
+        </ThemeProvider>
       </body>
     </html>
   )

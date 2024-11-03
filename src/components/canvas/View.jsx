@@ -2,11 +2,10 @@
 
 import { forwardRef, Suspense, useImperativeHandle, useRef } from 'react'
 import { OrbitControls, PerspectiveCamera, View as ViewImpl } from '@react-three/drei'
-import { Three } from '@/helpers/components/Three'
+import { Three } from '@/src/helpers/components/Three'
 
 export const Common = ({ color }) => (
   <Suspense fallback={null}>
-    <ambientLight />
     <PerspectiveCamera makeDefault fov={40} position={[0, 0, 6]} />
   </Suspense>
 )
